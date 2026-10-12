@@ -1,0 +1,144 @@
+# BLE bridge firmware application options (Task 9).
+
+mainmenu "BLE bridge firmware"
+
+menu "bridge options"
+
+config BRIDGE_PHY
+	string "bridge physical layer"
+	default "cdc"
+	help
+	  "cdc"   = nRF52840 native USB CDC ACM on zephyr_udc0 (primary,
+	            ADR-002 revision 1; bit rate is negotiated by USB).
+	  "uart0" = DK UART0 at 921600 8N1 with RTS/CTS hardware flow
+	            control (backup, external adapter; pins P0.06/P0.08/
+	            P0.05/P0.07 as wired by the nrf52840dk board files).
+	  Anything else fails the CMake configure step.
+
+config BRIDGE_VERSION
+	string "bridge semantic version (ping body is blebridge<version>)"
+	default "$(APPVERSION)"
+	help
+	  Derived from BRIDGE_VERSION_STR in CMakeLists.txt (the single bump
+	  point, D3): the Kconfig environment exports APPVERSION from it at
+	  configure time.  Bump the CMake variable, not this default.
+
+config BRIDGE_CREDITS_INIT
+	int "initial event credit balance (host grants more via CMD.credits)"
+	default 128
+
+config BRIDGE_LOG_LEVEL
+	int "initial log level for EVT.DEBUG gating (0=off 1=err 2=warn 3=info 4=debug)"
+	default 3
+	range 0 4
+
+config BRIDGE_USB_DTR_WAIT_MS
+	int "max wait at boot for CDC ACM DTR before starting (ms)"
+	default 5000
+
+config BRIDGE_EVENT_PAYLOAD_MAX
+	int "largest event payload accepted by bridge_link_post_event (bytes)"
+	default 256
+
+config BRIDGE_EVENT_QUEUE_LEN
+	int "depth of the ISR-safe event queue feeding the event thread"
+	default 16
+
+config BRIDGE_TX_QUEUE_LEN
+	int "depth of the TX frame queue drained by the single TX thread"
+	default 8
+
+config BRIDGE_CONNECT_TIMEOUT_MS
+	int "max wait for CMD.connect to establish the link (ms)"
+	default 5000
+
+config BRIDGE_PAIR_TIMEOUT_MS
+	int "max wait for CMD.pair to complete SMP pairing (ms)"
+	default 8000
+	range 500 30000
+
+config BRIDGE_SCAN_DURATION_MS
+	int "scan window used by CMD.scan_start when the request says 0 (ms)"
+	default 8000
+	range 100 60000
+
+config BRIDGE_SCAN_FILTER_FEF5
+	bool "EVT.SCAN reports only adverts carrying 0xFEF5 service data"
+	default n
+	help
+	  Default off: every advert is reported and the host filters (daemon
+	  keeps the dedup-by-addr view).  Turn on for a quiet wire.
+
+config BRIDGE_SCAN_CACHE_SIZE
+	int "scan result cache entries (connect-by-name lookups)"
+	default 8
+	range 1 64
+
+config BRIDGE_GATT_CHAR_MAX
+	int "characteristics cached per link across host-triggered discoveries"
+	default 32
+	range 1 32
+	help
+	  Entries of the GATT map filled by CMD.disc_svc (one run per service,
+	  merged until the link drops; each characteristic's CCC descriptor
+	  rides along inside its entry).  The SUOTA service needs 10; a
+	  generic multi-service device wants headroom.
+
+config BRIDGE_ADV_NAME
+	string "local device name used by CMD.adv_start (FR-H)"
+	default "blebridge"
+
+config BRIDGE_ADV_INTERVAL_DEFAULT_MS
+	int "advertising interval (ms) used by CMD.adv_start when the request sends 0xFFFF"
+	default 100
+	range 20 10240
+
+config BRIDGE_ADV_AUTO_RESTART
+	bool "automatically restart advertising after the peripheral link drops (FR-H fix round 1)"
+	default y
+	help
+	  The advertising intent survives a lost peripheral link: a clean
+	  disconnect or a crashed peer re-starts the last advertising
+	  configuration when CMD.adv_start was in effect.  Only an explicit
+	  CMD.adv_stop silences the auto-restart (real-device finding
+	  2026-09-25: every link loss otherwise required a manual adv-start).
+
+config BRIDGE_GATT_DYN_SVCS
+	int "host-defined GATT service slots (CMD.gatt_define, FR-H5)"
+	default 4
+	range 1 8
+
+config BRIDGE_GATT_DYN_CHARS_MAX
+	int "characteristics per host-defined GATT service (CMD.gatt_define)"
+	default 8
+	range 1 8
+
+config BRIDGE_GATT_DYN_SVC_POOL
+	int "value-storage bytes per host-defined GATT service slot"
+	default 1024
+	range 64 4096
+	help
+	  Sum of all characteristic max_len values of ONE gatt_define
+	  service; the definition is rejected when the request exceeds it.
+
+config BRIDGE_CONFIRM_DELAY_MS
+	int "stable-uptime milliseconds required before image self-confirm"
+	default 10000
+	range 1000 600000
+	help
+	  The confirm thread (main.c) waits this long after boot, checks the
+	  bridge health counters, and only then calls
+	  boot_write_img_confirmed().  An image that crashes or wedges before
+	  the deadline never confirms, so the next reset makes MCUboot swap
+	  back to the previous slot (revert).  Keep this well above any
+	  plausible boot-time failure window but short enough that a normal
+	  boot confirms without host interaction.
+
+config BRIDGE_CONFIRM_THREAD_STACK
+	int "stack bytes for the self-confirm thread"
+	default 1024
+	range 512 8192
+
+endmenu
+
+source "Kconfig.zephyr"

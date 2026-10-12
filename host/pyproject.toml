@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blebridge"
+version = "0.1.0"
+description = "blebridge: nRF52840 BLE 全透传双角色工具（central+外设）的 host 侧包（framing, transport, bridge, suota, daemon, CLI, MCP)；SUOTA/OTA 是其上的应用流程。"
+requires-python = ">=3.9"
+dependencies = ["pyserial>=3.5"]
+
+[project.scripts]
+blebridge = "blebridge.cli:main"
+blebridge-mcp = "blebridge.mcp_server:main"
+
+[project.optional-dependencies]
+# C-4: ruff/mypy 锁精确版本保证 lint/类型基线可复现；
+# mypy 2.x 自身要求 Python>=3.10（3.9 环境装不上属预期，CI 仅在 3.12 跑 mypy）。
+dev = [
+    "pytest>=8",
+    "ruff==0.16.9",
+    "mypy==2.3.1; python_version >= '3.10'",
+    "types-pyserial>=3.5",  # pyserial 类型桩：mypy strict 门禁的硬依赖
+]
+mcp = ["mcp>=2,<3"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: spawns a real subprocess (blebridge-mcp stdio session)",
+]
+
+# --------------------------------------------------------------- C-4 静态检查
+# 原则：贴合现有风格，ruff 全绿（存量违规以
+# per-file-ignores 显式隔离、不再新增）；mypy strict 作度量非门禁（CI 中
+# continue-on-error）。
+
+[tool.ruff]
+target-version = "py39"          # REQUIREMENTS §4: host 端 Python>=3.9 兼容语法
+line-length = 100                # 现有代码主体约 100 列；超出者隔离在 per-file-ignores
+src = ["src", "tests"]
+extend-exclude = ["build"]
+
+[tool.ruff.lint]
+# E/W: pycodestyle 错误类；F: pyflakes（真问题）；B: bugbear（本地实测零噪声）；
+# BLE: 代码库现有 `# noqa: BLE001` 注释即按此规则书写（daemon/CLI 的 best-effort 关闭路径）。
+# 不启用 I/SIM/UP 等：存量导入顺序/3.9 写法(Dict/List/Optional)不动，避免大面积改写。
+select = ["E", "W", "F", "B", "BLE"]
+
+[tool.ruff.lint.per-file-ignores]
+# C-4 存量基线（2026-09-24, ruff 0.16.9）：每条都对应现存违规，新增代码不得依赖这些豁免。
+"src/blebridge/mcp_server.py" = ["E501"]    # 3 处长行（docstring 内 URL/签名示例）
+"tests/test_daemon.py" = ["E501"]        # 1 处长行
+"src/blebridge/transport.py" = ["F401"]     # EVENT_CMDS 存量未使用导入（待后续清理）
+"tests/suota_fake.py" = ["F401"]         # STATUS_SAME_IMAGE 存量未使用导入
+"tests/test_hil_selftest.py" = ["F401"]  # encode_frame 存量未使用导入
+"tests/test_suota.py" = ["F401"]         # STATUS_CMD_SUCCESS 存量未使用导入
+"tests/test_proto_c.py" = ["F821"]       # 字符串注解引用 conftest.CStreamParser（未导入，运行时安全）
+
+[tool.mypy]
+# strict 门禁：残留 0 错（豁免见各文件 `# type: ignore[...]`
+# 行内注释，每条带理由）。
+python_version = "3.10"   # mypy 2.x 度量下限（3.9 不支持）；3.9 语法兼容由 ruff target-version 守护
+mypy_path = "src"
+packages = ["blebridge"]
+strict = true
+warn_unused_ignores = true   # strict 已含；显式声明防止未来降低 strict 时豁免腐化
+# tests/ 未纳入度量：conftest 的 ctypes 桩与 fixtures 类型噪声大，属有意排除，后续逐步纳入。
+
+
+[tool.setuptools.packages.find]
+where = ["src"]

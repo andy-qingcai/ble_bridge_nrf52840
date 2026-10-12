@@ -1,0 +1,92 @@
+/*
+ * blebridge bridge overlay for nrf52840dk/nrf52840 (Task 9, rev. task-dfu-a).
+ *
+ * - zephyr_udc0 (native nRF52840 USB device, already status-okay in the
+ *   board file) gains the CDC ACM UART class instance: the primary
+ *   physical layer, selected with CONFIG_BRIDGE_PHY="cdc".
+ * - task-dfu-a: a second CDC ACM instance (cdc_acm_uart1) serves the
+ *   MCUmgr SMP transport, chosen via zephyr,uart-mcumgr (A1 dual-CDC
+ *   architecture, docs/reports/dfu-usbcdc-eval-20260926.md §3.1).  The
+ *   bridge protocol keeps owning cdc_acm_uart0 end to end; the SMP
+ *   transport binds cdc_acm_uart1 exclusively (smp_uart.c), so the two
+ *   streams cannot cross-contaminate.  macOS enumerates the pair as two
+ *   /dev/cu.usbmodem* ports (same device, interface 0 = bridge, 1 = SMP).
+ * - task-dfu-a: DFU dual-slot partition map, 80 KB bootloader variant.
+ *   Lives HERE (not a build-flag overlay) because sysbuild.conf makes
+ *   EVERY build of this app a sysbuild build (auto-detected: plain
+ *   `west build` produces _sysbuild + dfu_application.zip), so there is
+ *   no single-slot consumer left and one map for all builds is the only
+ *   way to keep ad-hoc flashes consistent with the on-board bootloader.
+ *   Sizes = official smp_svr "larger_mcuboot" layout: measured
+ *   MCUboot-with-serial-recovery is 60.1 KiB and does NOT fit the stock
+ *   48 KB boot partition (eval report §3.2 risk, resolved by measurement).
+ *   The bootloader child declares the IDENTICAL map in
+ *   sysbuild/mcuboot.overlay -- the two files must never diverge (each
+ *   image derives slot ends / swap trailers from its own devicetree).
+ * - uart0 is reconfigured to 921600 8N1 with RTS/CTS hardware flow
+ *   control as the backup physical layer (CONFIG_BRIDGE_PHY="uart0").
+ *   The board pinctrl already maps TX=P0.06 RX=P0.08 RTS=P0.05 CTS=P0.07.
+ *   Bit rate only matters in uart0 mode; USB negotiates its own speed.
+ */
+
+/delete-node/ &boot_partition;
+/delete-node/ &slot0_partition;
+/delete-node/ &slot1_partition;
+/delete-node/ &storage_partition;
+
+&flash0 {
+	partitions {
+		boot_partition: partition@0 {
+			compatible = "zephyr,mapped-partition";
+			label = "mcuboot";
+			reg = <0x0 DT_SIZE_K(80)>;
+		};
+
+		slot0_partition: partition@14000 {
+			compatible = "zephyr,mapped-partition";
+			label = "image-0";
+			reg = <0x14000 DT_SIZE_K(440)>;
+		};
+
+		slot1_partition: partition@82000 {
+			compatible = "zephyr,mapped-partition";
+			label = "image-1";
+			reg = <0x82000 DT_SIZE_K(440)>;
+		};
+
+		storage_partition: partition@f0000 {
+			compatible = "zephyr,mapped-partition";
+			label = "storage";
+			reg = <0xf0000 DT_SIZE_K(64)>;
+		};
+	};
+};
+
+/* The cdc_acm_uart1 phandle is referenced by the chosen below; declare it
+ * "cdc_acm_uart1: cdc_acm_uart1" (label + name), like the smp_svr
+ * usb.overlay authority does for its CDC node. */
+
+&zephyr_udc0 {
+	status = "okay";
+
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_0";
+	};
+
+	cdc_acm_uart1: cdc_acm_uart1 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_1";
+	};
+};
+
+/ {
+	chosen {
+		zephyr,uart-mcumgr = &cdc_acm_uart1;
+	};
+};
+
+&uart0 {
+	hw-flow-control;
+	current-speed = <921600>;
+};

@@ -1,0 +1,54 @@
+/* E2-L2 (0.5.2-ackstall) = E2-L + dedicated log CDC.
+ *
+ * Why: E2-L's log outlet (uart0, 115200) is physically unreachable on the
+ * current bench rig -- the host-side port was an external CDC-UART bridge
+ * dongle that either is not wired to target
+ * uart0 or wedged with SWD; DTR/RTS + reset yields 0 bytes.  Bench rigs
+ * change, so uart0 keeps its E2-L fix below, but logs now ALSO get a
+ * native USB path that bypasses any external dongle.
+ *
+ * Changes vs E2-L (dts only; every E2-L Kconfig line reused verbatim via
+ * e2l_log.conf):
+ *  1. uart0 kept at 115200 8N1, no flow control (same minimal override as
+ *     e2l_uart0_115200.overlay -- the app board overlay pins 921600+RTS/CTS
+ *     at boards/nrf52840dk_nrf52840.overlay:89-92; /delete-property/ wins
+ *     because EXTRA_DTC_OVERLAY_FILE merges LAST).
+ *  2. Third CDC ACM instance cdc_acm_uart2 under &zephyr_udc0, same node
+ *     pattern as cdc_acm_uart1 (boards/nrf52840dk_nrf52840.overlay:77-80).
+ *  3. chosen: zephyr,console = &cdc_acm_uart2 -- the log-uart chosen is
+ *     NOT usable here: in Zephyr 4.4.2 log_backend_uart.c:255-258 treats
+ *     zephyr,log-uart as a MULTI-UART container (iterates a `uarts`
+ *     phandle-array property via DT_FOREACH_PROP_ELEM_SEP); a plain CDC
+ *     node has no `uarts` property and the macro expansion fails to
+ *     compile (error at log_backend_uart.c:257, seen in build-e2l2.log).
+ *     zephyr,console is the documented fallback branch
+ *     (#else -> LBU_DEFINE(DT_CHOSEN(zephyr_console))), i.e. the exact
+ *     macro path E2-L already compiled and ran.  LOG_BACKEND_UART (and
+ *     UART_CONSOLE, whose dep forced CONFIG_UART_CONSOLE=y) both bind it.
+ *     MUST-NOT-TOUCH respected: zephyr,uart-mcumgr stays
+ *     &cdc_acm_uart1 (SMP), cdc_acm_uart0 (protocol) untouched; uart0
+ *     keeps its E2-L 115200 backup-PHY fix (no chosen points at it).
+ *
+ * Endpoint budget (nRF52840 USBD: 7 general IN + 7 general OUT + ISO pair
+ * + EP0): 3 CDC ACM = 3 int-IN + 3 bulk-IN (6/7 IN) + 3 bulk-OUT (3/7 OUT)
+ * + EP0.  Fits with one general IN endpoint to spare; runtime enumeration
+ * remains the only true test (build cannot prove it).
+ */
+
+&uart0 {
+	/delete-property/ hw-flow-control;
+	current-speed = <115200>;
+};
+
+&zephyr_udc0 {
+	cdc_acm_uart2: cdc_acm_uart2 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_2";
+	};
+};
+
+/ {
+	chosen {
+		zephyr,console = &cdc_acm_uart2;
+	};
+};

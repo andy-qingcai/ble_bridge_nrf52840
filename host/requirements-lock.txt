@@ -1,0 +1,52 @@
+# blebridge host 依赖锁（C-4，REQUIREMENTS §4 "全部第三方依赖锁版本"）
+#
+# 基线：Python 3.14 venv，`pytest` 290 passed（2026-09-24，含 ruff==0.16.9 / mypy==2.3.1 工具链）。
+# 注意：mcp 2.x 要求 Python>=3.10，故本锁适用于 3.10+（3.9 环境请用 pyproject 的 `.[dev]` 约束自行解析）。
+#
+# 再生成：
+#   cd host && .venv/bin/pip install --upgrade pip
+#   .venv/bin/pip freeze --exclude-editable > requirements-lock.txt
+# 全新环境复现 290 测试：
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements-lock.txt
+#   .venv/bin/pip install -e . --no-deps
+#   cd host && .venv/bin/pytest -q
+annotated-types==0.8.0
+anyio==4.15.1
+ast_serialize==0.11.2
+attrs==26.1.0
+cffi==2.1.1
+click==8.5.0
+cryptography==50.0.1
+h11==0.16.0
+httpcore2==2.13.1
+httpx2==2.13.1
+idna==3.20
+iniconfig==2.3.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+librt==0.15.0
+mcp==2.2.0
+mcp-types==2.2.0
+mypy==2.3.1
+mypy_extensions==1.1.0
+opentelemetry-api==1.44.0
+packaging==26.3
+pathspec==1.1.1
+pluggy==1.6.0
+pycparser==3.0
+pydantic==2.13.5
+pydantic_core==2.46.5
+Pygments==2.21.0
+PyJWT==2.15.0
+pyserial==3.5
+pytest==9.1.1
+python-multipart==0.0.32
+referencing==0.37.0
+rpds-py==2026.6.3
+ruff==0.16.9
+sse-starlette==3.4.11
+starlette==1.7.0
+truststore==0.10.4
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+uvicorn==0.53.0

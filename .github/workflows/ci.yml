@@ -1,0 +1,109 @@
+# blebridge CI（C-4，docs/OPTIMIZATION-PLAN.md）
+#
+# 三个 job：
+#   host-tests     —— ruff + mypy(非阻塞基线) + pytest 矩阵(3.9/3.12)，含 golden/差分模糊；
+#                     mcp stdio 冒烟标记为 slow，在本 job 以 -m "not slow" 跳过（3.9 无 mcp）。
+#   proto-contract —— 锁定依赖（host/requirements-lock.txt）+ 全量 pytest（含 C 编译
+#                     firmware/proto/bridge_proto.c 的 L2 契约测试与差分模糊；Ubuntu 自带 gcc，
+#                     conftest.py 直接调 cc 编译，无需 CMake；含 slow 的 mcp stdio 冒烟，共 290 项）。
+#   firmware-lint  —— shellcheck + bash -n 检查 tools/*.sh。
+#
+# 注意：固件 Zephyr/NCS 全量构建（-Werror 严格编译门）暂不进 CI —— NCS 工具链太重；
+# 双槽 DFU 构建冒烟（task-dfu-a ⑥）同样依赖 NCS 工作区 + 签名密钥环境，做成
+# 本地脚本 tools/build-dfu.sh（自包含：sysbuild + MCUboot + 项目签名钥注入 +
+# 可选 pyocd 烧录），固件/引导改动后本地跑一次即等价冒烟；CI 侧预留可选 job
+# （firmware-dfu-smoke，当前 if: false 不跑）——上 NCS 容器镜像后把 `if: false`
+# 删掉并把容器镜像填进 container: 即生效：
+#
+#   firmware-dfu-smoke:
+#     if: false
+#     runs-on: ubuntu-latest
+#     container: <NCS 容器镜像>
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: tools/build-dfu.sh          # 构建门: exit 0 + merged.hex/dfu_application.zip 产出
+#
+# 触发 push + PR。仓库当前无远端，本文件先行入库，首次 push 后自动生效。
+
+name: CI
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (editable + dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev]'
+        working-directory: host
+
+      - name: Ruff (gate)
+        run: ruff check src tests
+        working-directory: host
+
+      # mypy 2.x 只支持 Python>=3.10，故仅在 3.12 腿运行；
+      # 2026-09-25 已收敛至 0 错（豁免 3 条带理由），转为阻塞门禁。
+      - name: Mypy (gate)
+        if: matrix.python-version == '3.12'
+        run: mypy
+        working-directory: host
+
+      - name: Pytest (golden + differential fuzz; mcp stdio smoke = slow, skipped)
+        run: pytest -q -m "not slow"
+        working-directory: host
+
+  proto-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install (locked deps + editable blebridge)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r host/requirements-lock.txt
+          pip install -e host --no-deps
+
+      - name: "Contract tests: full 290 (C-compiled bridge_proto + differential fuzz + slow mcp smoke)"
+        run: pytest -q
+        working-directory: host
+
+  firmware-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update -q && sudo apt-get install -y -q shellcheck
+
+      # -s bash：tools/ncs-env.sh 由 bootstrap-env.sh 生成、设计为 source 使用（无 shebang，
+      # SC2148），显式指定 shell 后全部零告警；tools/** 属生成物，不改原文件。
+      - name: shellcheck tools/*.sh
+        run: shellcheck -s bash tools/*.sh
+
+      - name: bash -n tools/*.sh (syntax)
+        run: |
+          set -e
+          for f in tools/*.sh; do
+            bash -n "$f"
+            echo "OK: $f"
+          done

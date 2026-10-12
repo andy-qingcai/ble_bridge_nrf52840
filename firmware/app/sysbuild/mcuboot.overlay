@@ -1,0 +1,67 @@
+/*
+ * MCUboot child-image devicetree overlay (task-dfu-a, plan B fallback).
+ *
+ * Auto-applied by sysbuild (<app>/sysbuild/mcuboot.overlay, see
+ * sysbuild_extensions.cmake).  Two jobs:
+ *
+ * 1. BOOT_SERIAL_CDC_ACM binds the recovery console with
+ *    DEVICE_DT_GET_ONE(zephyr_cdc_acm_uart)
+ *    (bootloader/mcuboot/boot/zephyr/serial_adapter.c) -- the nrf52840dk
+ *    board file defines no CDC ACM node, so the bootloader image needs one
+ *    under its own zephyr_udc0.
+ *
+ * 2. The bootloader inherits the board default "zephyr,code-partition =
+ *    &slot0_partition", which would link MCUboot INTO slot0.  Point it at
+ *    boot_partition and declare the same 80 KB map as the app-side
+ *    boards/nrf52840dk_nrf52840_dfu80.overlay (the mesh-dfu authority
+ *    sample does exactly this in sysbuild/mcuboot/app.overlay).  The two
+ *    partition maps must stay identical: MCUboot and the app each derive
+ *    slot boundaries and swap-trailer placement from their own devicetree.
+ */
+
+/delete-node/ &boot_partition;
+/delete-node/ &slot0_partition;
+/delete-node/ &slot1_partition;
+/delete-node/ &storage_partition;
+
+&zephyr_udc0 {
+	status = "okay";
+
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
+
+&flash0 {
+	partitions {
+		boot_partition: partition@0 {
+			compatible = "zephyr,mapped-partition";
+			label = "mcuboot";
+			reg = <0x0 DT_SIZE_K(80)>;
+		};
+
+		slot0_partition: partition@14000 {
+			compatible = "zephyr,mapped-partition";
+			label = "image-0";
+			reg = <0x14000 DT_SIZE_K(440)>;
+		};
+
+		slot1_partition: partition@82000 {
+			compatible = "zephyr,mapped-partition";
+			label = "image-1";
+			reg = <0x82000 DT_SIZE_K(440)>;
+		};
+
+		storage_partition: partition@f0000 {
+			compatible = "zephyr,mapped-partition";
+			label = "storage";
+			reg = <0xf0000 DT_SIZE_K(64)>;
+		};
+	};
+};
+
+/ {
+	chosen {
+		zephyr,code-partition = &boot_partition;
+	};
+};

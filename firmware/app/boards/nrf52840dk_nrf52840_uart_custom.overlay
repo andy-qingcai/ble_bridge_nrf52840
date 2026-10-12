@@ -1,0 +1,64 @@
+/*
+ * blebridge bridge — 用户自定义 UART0 引脚 overlay（nrf52840dk/nrf52840）。
+ *
+ * 背景: 固件跑在 nrf52840dk/nrf52840 目标码上，但实际载板为用户自制板，
+ * UART0 不走 DK 原生排布，而是走 P1 口。映射逐字采用用户选定的引脚:
+ *
+ *   信号  引脚    对应 DK 默认（boards/nrf52840dk_nrf52840.overlay /
+ *                       板级 pinctrl dtsi）
+ *   TX   = P1.04  (DK: P0.06)
+ *   RX   = P1.13  (DK: P0.08)
+ *   RTS  = P1.15  (DK: P0.05)
+ *   CTS  = P1.00  (DK: P0.07)
+ *
+ * 速率/模式与 DK 默认路径一致: 921600 8N1 + RTS/CTS 硬件流控
+ * （备用物理层，CONFIG_BRIDGE_PHY="uart0" 时启用）。
+ *
+ * 偏置选择（用户板上下文）:
+ *   RX  bias-pull-up   —— 对端未接线/未上电时 RX 空闲保持高（UART 空闲电平）。
+ *   CTS bias-pull-down —— CTS 悬空时读低 = 允许发送: 为 2 线（仅 TX/RX）
+ *                         升级路径留门，不接流控线也能发。
+ *
+ * 使用: app 目标构建时附加
+ *   -DEXTRA_DTC_OVERLAY_FILE=boards/nrf52840dk_nrf52840_uart_custom.overlay
+ * 或 tools/flash.sh app --uart-custom（独立 build-t10-uart-custom 目录）。
+ * 不修改、不影响 DK 默认 overlay（boards/nrf52840dk_nrf52840.overlay，
+ * P0.06/08/05/07）—— 默认构建/HIL 不带本文件时行为与原先完全一致。
+ */
+
+&pinctrl {
+	uart0_default_alt: uart0_default_alt {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 1, 4)>,
+				<NRF_PSEL(UART_RTS, 1, 15)>;
+		};
+
+		group2 {
+			psels = <NRF_PSEL(UART_RX, 1, 13)>;
+			bias-pull-up;
+		};
+
+		group3 {
+			psels = <NRF_PSEL(UART_CTS, 1, 0)>;
+			bias-pull-down;
+		};
+	};
+
+	uart0_sleep_alt: uart0_sleep_alt {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 1, 4)>,
+				<NRF_PSEL(UART_RX, 1, 13)>,
+				<NRF_PSEL(UART_RTS, 1, 15)>,
+				<NRF_PSEL(UART_CTS, 1, 0)>;
+			low-power-enable;
+		};
+	};
+};
+
+&uart0 {
+	pinctrl-0 = <&uart0_default_alt>;
+	pinctrl-1 = <&uart0_sleep_alt>;
+	pinctrl-names = "default", "sleep";
+	hw-flow-control;
+	current-speed = <921600>;
+};

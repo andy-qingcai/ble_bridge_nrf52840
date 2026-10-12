@@ -1,0 +1,145 @@
+# suota_sim application options (Task 11).
+
+mainmenu "suota_sim - SUOTA peripheral simulator"
+
+menu "suota_sim options"
+
+config SUOTA_SIM_ADV_NAME
+	string "advertising local name"
+	default "SuotaSim"
+
+config SUOTA_SIM_ADV_INTERVAL_MS
+	int "advertising interval in ms (continuous mode)"
+	default 100
+	range 20 10000
+	help
+	  Interval of the connectable advertising when
+	  SUOTA_SIM_ADV_BURST is disabled.  Default 100 ms.
+
+config SUOTA_SIM_ADV_BURST
+	bool "burst advertising (20 s burst pattern)"
+	default n
+	help
+	  When enabled suota_sim does not advertise continuously but in
+	  bursts: SUOTA_SIM_ADV_BURST_ON_MS of advertising followed by
+	  silence for the remainder of SUOTA_SIM_ADV_BURST_PERIOD_S.
+
+config SUOTA_SIM_ADV_BURST_ON_MS
+	int "duration of one advertising burst in ms"
+	default 5000
+	range 100 60000
+
+config SUOTA_SIM_ADV_BURST_PERIOD_S
+	int "period of the advertising burst cycle in s"
+	default 20
+	range 2 3600
+
+config SUOTA_SIM_ADDR_MODE
+	string "address source: \"fixed\" (compile time constant) or \"nvs\" (generate once, persist)"
+	default "fixed"
+
+config SUOTA_SIM_ADDR
+	string "fixed static random address (valid when ADDR_MODE=\"fixed\")"
+	default "C0:FF:EE:12:34:56"
+	help
+	  Fixed static random address for the simulator.  The two most
+	  significant bits of the first octet must be set for a legal
+	  static random address (BT Core Vol 6, B 1.3); 0xC0 satisfies that.
+
+config SUOTA_SIM_VERSION
+	int "SUOTA_VERSION characteristic value (reference value: 13 = 0x0D)"
+	default 13
+	range 0 255
+
+config SUOTA_SIM_MAX_CHUNK
+	int "PATCH_DATA chunk cap / PATCH_DATA_CHAR_SIZE value (reference value: 244)"
+	default 244
+	range 20 244
+
+config SUOTA_SIM_ATT_MTU_INFO
+	int "ATT MTU reported by the SUOTA MTU info characteristic (reference value: 251)"
+	default 251
+	range 23 517
+
+config SUOTA_SIM_PSM
+	int "L2CAP PSM reported by the L2CAP_PSM characteristic (reference value: 129)"
+	default 129
+	range 1 65535
+
+config SUOTA_SIM_MEM_INFO
+	int "bytes reported by the MEM_INFO characteristic (example value: 4 MB)"
+	default 4194304
+	range 0 4294967295
+
+config SUOTA_SIM_BLOCK_MAX
+	int "upper bound accepted for PATCH_LEN (default protection: 2048)"
+	default 2048
+	range 20 65535
+
+config SUOTA_SIM_BLOCK_ACK_DELAY_MS
+	int "delay before the per-block 0x02 ACK notification (reference device: 120-135 ms; 0 = instant for fast tests)"
+	default 130
+	range 0 30000
+
+config SUOTA_SIM_REBOOT_DELAY_S
+	int "delay between REBOOT disconnect and re-advertising (reference device: ~10 s)"
+	default 10
+	range 0 300
+
+config SUOTA_SIM_SAME_IMAGE
+	bool "reject MEM_DEV banks equal to the running bank with SAME_IMAGE"
+	default n
+	help
+	  When enabled, a MEM_DEV start write whose bank equals
+	  SUOTA_SIM_SAME_IMAGE_BANK is refused with SAME_IMAGE (0x15).
+	  Behavior note (measured against a reference SUOTA device): the
+	  refusal is carried in the ATT write response itself (error code
+	  0x15) and no SERV_STATUS notification is sent.  AN-B-022 lists 0x15
+	  as a SERV_STATUS notify value; the observed behavior takes
+	  precedence here, and the host (host/src/blebridge/suota.py) maps
+	  both delivery paths to the same SameImageError.
+
+config SUOTA_SIM_SAME_IMAGE_BANK
+	int "bank the simulated device is considered to be running from (0x15 trigger)"
+	default 0
+	range 0 255
+
+config SUOTA_SIM_EXPECTED_SIZE
+	int "expected upload size in bytes, including the trailing XOR checksum byte (0 = do not check)"
+	default 0
+	range 0 4294967295
+	help
+	  When non-zero, the END command compares the accumulated byte
+	  total against this value; a mismatch is reported with status
+	  0x13 (INVALID_IMAGE_SIZE, AN-B-022 section 2.1).
+	  Note the SUOTA upload carries fileSize + 1 bytes because the
+	  sender appends the whole-file XOR checksum byte.
+
+config SUOTA_SIM_CHECK_XOR
+	bool "enforce XOR checksum == 0 at END (reject with 0x04 CRC_MISMATCH)"
+	default n
+	help
+	  The running XOR over the whole upload equals zero when (and only
+	  when) the sender appended the correct whole-file XOR byte, so
+	  this is a real protocol check even in accounting mode.  Off by
+	  default: whether a given SUOTA device enforces it is not
+	  guaranteed by AN-B-022.
+	  HIL note: strict HIL acceptance
+	  requires this option PLUS a matching SUOTA_SIM_EXPECTED_SIZE.
+	  Both are wired together in
+	  firmware/suota_sim/boards/nrf52840dk_nrf52840_hil.conf, attached by
+	  `tools/flash.sh suota_sim --hil` (the default build stays a fast
+	  smoke build with both checks off).
+
+config SUOTA_SIM_KEEP_HEADER
+	bool "keep the first 4 KiB of the upload in RAM for debugger dump"
+	default n
+
+config SUOTA_SIM_ABORT_STATUS
+	int "status code notified after ABORT (brief: 2 = 0x02; alt: 3 = 0x03 SRV_EXIT)"
+	default 2
+	range 1 255
+
+endmenu
+
+source "Kconfig.zephyr"

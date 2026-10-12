@@ -1,0 +1,3 @@
+# Firmware images are opaque binary blobs: never diff/normalize them
+# (fixtures carry exact bytes asserted by the SUOTA/image tests).
+host/tests/fixtures/*.img binary

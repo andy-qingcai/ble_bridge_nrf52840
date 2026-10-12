@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "protocol": "blebridge uart bridge v2 (ADR-002)",
+    "generator": "python -m tests.tools.gen_golden > tests/golden_frames.json",
+    "seed": 20260924,
+    "note": "Generated file - do not hand-edit."
+  },
+  "frames": [
+    {
+      "name": "req_ping_empty",
+      "cmd": 1,
+      "seq": 1,
+      "payload_hex": "",
+      "frame_hex": "55000001011f3e",
+      "crc": 15903
+    },
+    {
+      "name": "rsp_ping_empty",
+      "cmd": 129,
+      "seq": 1,
+      "payload_hex": "",
+      "frame_hex": "55000081018725",
+      "crc": 9607
+    },
+    {
+      "name": "req_info_empty",
+      "cmd": 2,
+      "seq": 2,
+      "payload_hex": "",
+      "frame_hex": "55000002022f5b",
+      "crc": 23343
+    },
+    {
+      "name": "rsp_info_payload",
+      "cmd": 130,
+      "seq": 2,
+      "payload_hex": "00010203",
+      "frame_hex": "550400820200010203c274",
+      "crc": 29890
+    },
+    {
+      "name": "req_payload_1",
+      "cmd": 64,
+      "seq": 3,
+      "payload_hex": "03",
+      "frame_hex": "55010040030301b4",
+      "crc": 46081
+    },
+    {
+      "name": "req_payload_2",
+      "cmd": 65,
+      "seq": 4,
+      "payload_hex": "d1f0",
+      "frame_hex": "5502004104d1f02189",
+      "crc": 35105
+    },
+    {
+      "name": "req_payload_3",
+      "cmd": 66,
+      "seq": 5,
+      "payload_hex": "a9e98b",
+      "frame_hex": "5503004205a9e98b6651",
+      "crc": 20838
+    },
+    {
+      "name": "evt_scan_result_20",
+      "cmd": 32,
+      "seq": 7,
+      "payload_hex": "a1b3258f91c9bad00ed86d475ec3a671c089ee55f058718a3eb80e433444d7",
+      "frame_hex": "551f002007a1b3258f91c9bad00ed86d475ec3a671c089ee55f058718a3eb80e433444d75619",
+      "crc": 6486
+    },
+    {
+      "name": "evt_conn_state_21",
+      "cmd": 33,
+      "seq": 8,
+      "payload_hex": "0916975ec878e4c1",
+      "frame_hex": "55080021080916975ec878e4c173df",
+      "crc": 57203
+    },
+    {
+      "name": "evt_notify_22_244",
+      "cmd": 34,
+      "seq": 9,
+      "payload_hex": "531341763880997ed975e2736ef6ee72f9feff4609d1d98e2a8c64a7ba9a691e8046d12c74ce84936b813dd81ebc057c39c997f04a6a1b20712306034f6830608ea19cf459e8937c37d47dcd385f0ff2a4bf87e44e6093051bcc9bb5fe3f7c50c0b2bbb0665f8100264b0518af4a9b35faeea6b51c83bc220f9b8ca1fc064da958cb12ac0a80163797ab428f301a14c1f4ece587970e804af10259c27d611b73bd6f6ee3e7625ca07e2ab9730e62523ce8fe4756e81fa57527e9e017287dbbfa92981541e6d7fc6e90494d68fa512b030493d80323a2eb9d92311995516169d3b4476e0f2a333b5c30f479e66ae98b9339116f3d",
+      "frame_hex": "55f4002209531341763880997ed975e2736ef6ee72f9feff4609d1d98e2a8c64a7ba9a691e8046d12c74ce84936b813dd81ebc057c39c997f04a6a1b20712306034f6830608ea19cf459e8937c37d47dcd385f0ff2a4bf87e44e6093051bcc9bb5fe3f7c50c0b2bbb0665f8100264b0518af4a9b35faeea6b51c83bc220f9b8ca1fc064da958cb12ac0a80163797ab428f301a14c1f4ece587970e804af10259c27d611b73bd6f6ee3e7625ca07e2ab9730e62523ce8fe4756e81fa57527e9e017287dbbfa92981541e6d7fc6e90494d68fa512b030493d80323a2eb9d92311995516169d3b4476e0f2a333b5c30f479e66ae98b9339116f3debdb",
+      "crc": 56299
+    },
+    {
+      "name": "evt_flow_credit_23",
+      "cmd": 35,
+      "seq": 10,
+      "payload_hex": "1251b154",
+      "frame_hex": "550400230a1251b1542a1b",
+      "crc": 6954
+    },
+    {
+      "name": "evt_error_24",
+      "cmd": 36,
+      "seq": 11,
+      "payload_hex": "39c3b7fee319957eee5ddee6fdf7aa6b",
+      "frame_hex": "551000240b39c3b7fee319957eee5ddee6fdf7aa6bb911",
+      "crc": 4537
+    },
+    {
+      "name": "evt_dbg_25",
+      "cmd": 37,
+      "seq": 12,
+      "payload_hex": "56edaafa7631",
+      "frame_hex": "550600250c56edaafa76314395",
+      "crc": 38211
+    },
+    {
+      "name": "evt_debug_8E",
+      "cmd": 142,
+      "seq": 1,
+      "payload_hex": "363ddb89cd14e8881d68daa1adb7d4fe0087f198",
+      "frame_hex": "5514008e01363ddb89cd14e8881d68daa1adb7d4fe0087f198a7de",
+      "crc": 56999
+    },
+    {
+      "name": "req_suota_chunk_244",
+      "cmd": 80,
+      "seq": 16,
+      "payload_hex": "4cb4efe375ddc30bf82a57a47cf86305508429a184ae9bd6a713ef1aaf86bb6e031ab5e86ddf21bb2b7f93748a68e3f47c2de2b284ac002880ab7e62504f17d23039953105f8675dda82dd520d135f42cf811278163b71481d395d2d13dcbf0b4473df2e0aa1b1266c0fcf6d6fd29b4d5cb8bb7810791203bbafc9aadbcd59a10360553d7f0d27625293f8d4a2328ea8569f20b6a3e70726e74b500349a52b37c2a0b2bb2afeb34ace9b7d73a57a73d4524166aaf1322a35f500ca00499f3ddca37b03496681d9ae5b0fd358d13820e6c75c7936c8ea49b05d4fc40163ce9f465224e31df600b2168998b4bd66a97d655089dac8",
+      "frame_hex": "55f40050104cb4efe375ddc30bf82a57a47cf86305508429a184ae9bd6a713ef1aaf86bb6e031ab5e86ddf21bb2b7f93748a68e3f47c2de2b284ac002880ab7e62504f17d23039953105f8675dda82dd520d135f42cf811278163b71481d395d2d13dcbf0b4473df2e0aa1b1266c0fcf6d6fd29b4d5cb8bb7810791203bbafc9aadbcd59a10360553d7f0d27625293f8d4a2328ea8569f20b6a3e70726e74b500349a52b37c2a0b2bb2afeb34ace9b7d73a57a73d4524166aaf1322a35f500ca00499f3ddca37b03496681d9ae5b0fd358d13820e6c75c7936c8ea49b05d4fc40163ce9f465224e31df600b2168998b4bd66a97d655089dac85075",
+      "crc": 30032
+    },
+    {
+      "name": "rsp_payload_244",
+      "cmd": 208,
+      "seq": 16,
+      "payload_hex": "99d6e910e2a696801caba98cfd2b0cb2c7c8752a5435a6ec70a4629644ff4c9276fe1603d59555832212723f83b9d4cfaacc2a29c534d57a4e4f22e7be9adfce05112af5b2c4682b7c78904cacd34c9bd3a659d868a94cc3e3dbe7605f1c9097fec079da162c2b4b4a059dfe3ce17f8155ce5eab74a7b6bc2d4be798683fca6bc85e4d902c22c18184a2f4e62849a4aed1601ef00b0c1fc9536c561223526b6c6c8153fb2b4a00af579ae5bba92a7b8c9f7a49c1aa3343de04fbb21bfca3619682f55b28f152f291358019bb77de3a7b5d05ebbfeaab47de96c89722f1fd4c4f33d0513e8da526091dcfb2538c8bfcd177b4be79",
+      "frame_hex": "55f400d01099d6e910e2a696801caba98cfd2b0cb2c7c8752a5435a6ec70a4629644ff4c9276fe1603d59555832212723f83b9d4cfaacc2a29c534d57a4e4f22e7be9adfce05112af5b2c4682b7c78904cacd34c9bd3a659d868a94cc3e3dbe7605f1c9097fec079da162c2b4b4a059dfe3ce17f8155ce5eab74a7b6bc2d4be798683fca6bc85e4d902c22c18184a2f4e62849a4aed1601ef00b0c1fc9536c561223526b6c6c8153fb2b4a00af579ae5bba92a7b8c9f7a49c1aa3343de04fbb21bfca3619682f55b28f152f291358019bb77de3a7b5d05ebbfeaab47de96c89722f1fd4c4f33d0513e8da526091dcfb2538c8bfcd177b4be79df93",
+      "crc": 37855
+    },
+    {
+      "name": "req_mtu_data_247",
+      "cmd": 81,
+      "seq": 17,
+      "payload_hex": "3f734bcec6f2e2b21b67bd2fc505fbc0c8fe47ce6d98c8d90eda6f2327ac4ba236f71da05df01a062c933ed404081c27c13e9e3adb1f4557bf4b7e874ff891d5d5a54ac78426f8b3d6c49586e5ea1919e6f5d4c2ce3e8d5bf0343bddfa42819151ea91e737e85be35f1f626e3bd031b4a8eac9c9a0ddb81024320cda4af14321508bfacf44bbd580695f36455b83f3774e2decf40a311073ca9ebefec8eb225670b0339715cea072f065f9fada584d4b76a92adc1f8ee6e982b0d969671adb18db4350d2157b609a4d76b3e7ef2d1e95662ab346c3509059ad74057b1b49f826cb9ad570b6e1476d2397534a76cba589de26e3c823d3f4",
+      "frame_hex": "55f70051113f734bcec6f2e2b21b67bd2fc505fbc0c8fe47ce6d98c8d90eda6f2327ac4ba236f71da05df01a062c933ed404081c27c13e9e3adb1f4557bf4b7e874ff891d5d5a54ac78426f8b3d6c49586e5ea1919e6f5d4c2ce3e8d5bf0343bddfa42819151ea91e737e85be35f1f626e3bd031b4a8eac9c9a0ddb81024320cda4af14321508bfacf44bbd580695f36455b83f3774e2decf40a311073ca9ebefec8eb225670b0339715cea072f065f9fada584d4b76a92adc1f8ee6e982b0d969671adb18db4350d2157b609a4d76b3e7ef2d1e95662ab346c3509059ad74057b1b49f826cb9ad570b6e1476d2397534a76cba589de26e3c823d3f49c6e",
+      "crc": 28316
+    },
+    {
+      "name": "req_payload_511",
+      "cmd": 82,
+      "seq": 18,
+      "payload_hex": "2ae0dc3a478e2b2f8c82ad0b8d7507345ed87ed206dea3745cdf6b91b5029e25f647cff08c85342b279b0cf29e834161133d460463a412bba0da46bc6f71a316d70ab269644fd8e7244e7e0cf205628642bd77b2adc468513adcefcf3fdcb0e3fd6f6680d7609d1b804d75be0c0ab90c0498e18c6b96a65851257471fd10ed4dad1cb62f5b53117fa724b4f84b9a6309f0b89d842f4db79740c5ac3a71e5163148337776d474f32402328064f7e2bb80b473d170e8861ebcba646f48525e280f1d194ef89672dc4f247498cd331c851ecf171c08ba3b6d22db868b0747dd2fd7ac62e53b46dfd07ec3af65851d2bd777f9d2c6919fd797fc3ec2e1b776fc7d3c11e38e557313e55b7695ed0a2f8e056c57dc7bf5859691ac3c5cb61b6e5c63466eb23f3d3a49d8e1793428b074aea7cf85ebe90844d0d9141cef8521155824bdc34386866125b9a347250cf4b936abe0ff2799abafb9d0dcab24bc9016ee8eea7cd8cbf6052ead556b94ee45fdad1ee7c1f7bd26444ef01aac9181625c1c60b17a6fd3d827866ebe1e106b28dc2e56641d6898ab4a0279cce432f76bc356c25c1d7bec2ad4c00e94dc7fcd285840794b4e2d6a9af6320249801c216f56f9da45d2e2d3228ef2e203f4c490a02e4a0891fc4ef998075f70377bf4494e1e26266982075b73dbf0f6c0e517deb2219767352eb0b2813a15c531b6ac59b1190b8f",
+      "frame_hex": "55ff0152122ae0dc3a478e2b2f8c82ad0b8d7507345ed87ed206dea3745cdf6b91b5029e25f647cff08c85342b279b0cf29e834161133d460463a412bba0da46bc6f71a316d70ab269644fd8e7244e7e0cf205628642bd77b2adc468513adcefcf3fdcb0e3fd6f6680d7609d1b804d75be0c0ab90c0498e18c6b96a65851257471fd10ed4dad1cb62f5b53117fa724b4f84b9a6309f0b89d842f4db79740c5ac3a71e5163148337776d474f32402328064f7e2bb80b473d170e8861ebcba646f48525e280f1d194ef89672dc4f247498cd331c851ecf171c08ba3b6d22db868b0747dd2fd7ac62e53b46dfd07ec3af65851d2bd777f9d2c6919fd797fc3ec2e1b776fc7d3c11e38e557313e55b7695ed0a2f8e056c57dc7bf5859691ac3c5cb61b6e5c63466eb23f3d3a49d8e1793428b074aea7cf85ebe90844d0d9141cef8521155824bdc34386866125b9a347250cf4b936abe0ff2799abafb9d0dcab24bc9016ee8eea7cd8cbf6052ead556b94ee45fdad1ee7c1f7bd26444ef01aac9181625c1c60b17a6fd3d827866ebe1e106b28dc2e56641d6898ab4a0279cce432f76bc356c25c1d7bec2ad4c00e94dc7fcd285840794b4e2d6a9af6320249801c216f56f9da45d2e2d3228ef2e203f4c490a02e4a0891fc4ef998075f70377bf4494e1e26266982075b73dbf0f6c0e517deb2219767352eb0b2813a15c531b6ac59b1190b8f9c44",
+      "crc": 17564
+    },
+    {
+      "name": "req_payload_512_max",
+      "cmd": 83,
+      "seq": 19,
+      "payload_hex": "2b9e801c9f966fbe80e1b102d4476240e268cb021e084cdd0e9175c5fc681bf3dc7e936cbbc7daba0b21fb95d4822a9a024f95b182f6be5718021ede300bbda9ca01d84ee80de49ddae82ca2357e9dfdbf8e7d3e427e91e70664725d5581e294329fe5439228b6382d18fbeae52d5697ab8129874f4daeb1c804daacb87876a9f1f175a497be005fa263a0014b62a2832221dae7887ca9227169f611da6f6a7d00fa66d32c5471388891cc0a28eeaf6c9c1bbfbaa01cfeedfa7db1eef71d4ddbb798067fb5f92a33eacda0a88c7614b4d4222b8715267ba5ee058fb85c2dc2169782b24215324f61291f63ac166fa103709c73b91e918da1e4690809a4518f5264997734f1c858133bacc4315dcdf6db9f4af95d1e20fa7767fac2d05140e7b39a2e51731eba9c3a27ada6b1911db22a80b16ae9706b5e3dbc7b6ed47edf520f2342c61d9a66768064e60193c2bfafa3bde59478577fb53e874ce69bc0c3246d741c247b4ac50b29f7988471ed88c5076b1029857a791903ccd293dd367be16d9bf88458e221a22ecda84e2c51e13c2fc72cb033aa8710929aab20b710c6f1288b6d3e7ccf30a07eed07f25eef03e2a878082d9d91561200dd00d813521253f277d42674ad2d4fc66c4d20d8948cf9d68350d988be44546fa8ec89886dbade02833fdad01696b5571214962a952fc7c72ce62416ddccc74126f916ce66084873",
+      "frame_hex": "55000253132b9e801c9f966fbe80e1b102d4476240e268cb021e084cdd0e9175c5fc681bf3dc7e936cbbc7daba0b21fb95d4822a9a024f95b182f6be5718021ede300bbda9ca01d84ee80de49ddae82ca2357e9dfdbf8e7d3e427e91e70664725d5581e294329fe5439228b6382d18fbeae52d5697ab8129874f4daeb1c804daacb87876a9f1f175a497be005fa263a0014b62a2832221dae7887ca9227169f611da6f6a7d00fa66d32c5471388891cc0a28eeaf6c9c1bbfbaa01cfeedfa7db1eef71d4ddbb798067fb5f92a33eacda0a88c7614b4d4222b8715267ba5ee058fb85c2dc2169782b24215324f61291f63ac166fa103709c73b91e918da1e4690809a4518f5264997734f1c858133bacc4315dcdf6db9f4af95d1e20fa7767fac2d05140e7b39a2e51731eba9c3a27ada6b1911db22a80b16ae9706b5e3dbc7b6ed47edf520f2342c61d9a66768064e60193c2bfafa3bde59478577fb53e874ce69bc0c3246d741c247b4ac50b29f7988471ed88c5076b1029857a791903ccd293dd367be16d9bf88458e221a22ecda84e2c51e13c2fc72cb033aa8710929aab20b710c6f1288b6d3e7ccf30a07eed07f25eef03e2a878082d9d91561200dd00d813521253f277d42674ad2d4fc66c4d20d8948cf9d68350d988be44546fa8ec89886dbade02833fdad01696b5571214962a952fc7c72ce62416ddccc74126f916ce66084873f919",
+      "crc": 6649
+    },
+    {
+      "name": "rsp_payload_512_max",
+      "cmd": 211,
+      "seq": 19,
+      "payload_hex": "54f9534e235d72316fb0a5041f890abdc44a2a5e9bc06b07ab5f591717240a34bc9a57d47f4ecc92e77918dd2c7d0d5613a7c09845faa99ec84e763b0b1890ad9294129391a444bed9305e48613ffc50f58bfbc90a931a93181a219c8b48b2ebbdfd57ef680d04f81550f7b7ae997cec4489acf07e4a1bbe37f5273c543c8066524e7cf99c26990f60b1184d727d2c3d1c09f4e2493c47460f3b7ef15b9b2ab80baea21be41fd337f6d8f443d2e66f02a0094a57004637df9826662be591263ed82b99dcc014fee75032245acca9c917db47de59b9a26a0a759f7dc6d4a002ff8f2985399c9defaea0519026c111ab96c741c7c1e3890a00b69e1a56be515cb117a81f20f0268d613de5eda2a0ed78f88438c85754b4be4769236a63e1f3db2ad00cacb36da92b1d4906fcf93ccf8ac2692fe87bb642636f98ed0b0dc85a5532998ac95e600ea574de62d05403674893249ed00855f30fe2b1dbea6245c720fdd21ff01ac062e19c367007053065eb8b1e656f1df6e7768f191e67326ec5ef196070cd514620a17410c32f39a37606ee7cbe520589aa07da1ad422f1753c5f37fd08ae2dbc7c0ee5bcd2e7e62b7fa4e2385b1fa37306febb8b6db8b6b005c83ea688dbcb7eaab3d2fcd045845705b0def357c01fb129e30fee09b98b13a34ee42a58466ba356efd661efc9cf3d215610be05b2bd4c508d832f62f6838fe8a40a",
+      "frame_hex": "550002d31354f9534e235d72316fb0a5041f890abdc44a2a5e9bc06b07ab5f591717240a34bc9a57d47f4ecc92e77918dd2c7d0d5613a7c09845faa99ec84e763b0b1890ad9294129391a444bed9305e48613ffc50f58bfbc90a931a93181a219c8b48b2ebbdfd57ef680d04f81550f7b7ae997cec4489acf07e4a1bbe37f5273c543c8066524e7cf99c26990f60b1184d727d2c3d1c09f4e2493c47460f3b7ef15b9b2ab80baea21be41fd337f6d8f443d2e66f02a0094a57004637df9826662be591263ed82b99dcc014fee75032245acca9c917db47de59b9a26a0a759f7dc6d4a002ff8f2985399c9defaea0519026c111ab96c741c7c1e3890a00b69e1a56be515cb117a81f20f0268d613de5eda2a0ed78f88438c85754b4be4769236a63e1f3db2ad00cacb36da92b1d4906fcf93ccf8ac2692fe87bb642636f98ed0b0dc85a5532998ac95e600ea574de62d05403674893249ed00855f30fe2b1dbea6245c720fdd21ff01ac062e19c367007053065eb8b1e656f1df6e7768f191e67326ec5ef196070cd514620a17410c32f39a37606ee7cbe520589aa07da1ad422f1753c5f37fd08ae2dbc7c0ee5bcd2e7e62b7fa4e2385b1fa37306febb8b6db8b6b005c83ea688dbcb7eaab3d2fcd045845705b0def357c01fb129e30fee09b98b13a34ee42a58466ba356efd661efc9cf3d215610be05b2bd4c508d832f62f6838fe8a40a9f32",
+      "crc": 12959
+    },
+    {
+      "name": "req_seq_0",
+      "cmd": 1,
+      "seq": 0,
+      "payload_hex": "",
+      "frame_hex": "55000001003e2e",
+      "crc": 11838
+    },
+    {
+      "name": "req_seq_255",
+      "cmd": 1,
+      "seq": 255,
+      "payload_hex": "aa",
+      "frame_hex": "55010001ffaaf3ec",
+      "crc": 60659
+    },
+    {
+      "name": "req_ascii_payload",
+      "cmd": 3,
+      "seq": 33,
+      "payload_hex": "6272696467652d70726f6265",
+      "frame_hex": "550c0003216272696467652d70726f6265e647",
+      "crc": 18406
+    },
+    {
+      "name": "req_zeros_payload",
+      "cmd": 4,
+      "seq": 34,
+      "payload_hex": "00000000000000000000000000000000",
+      "frame_hex": "551000042200000000000000000000000000000000caa8",
+      "crc": 43210
+    },
+    {
+      "name": "req_ff_payload",
+      "cmd": 5,
+      "seq": 35,
+      "payload_hex": "ffffffffffffffffffffffffffffffff",
+      "frame_hex": "5510000523ffffffffffffffffffffffffffffffff5848",
+      "crc": 18520
+    },
+    {
+      "name": "evt_empty_payload",
+      "cmd": 32,
+      "seq": 0,
+      "payload_hex": "",
+      "frame_hex": "5500002000e91b",
+      "crc": 7145
+    }
+  ],
+  "streams": [
+    {
+      "name": "leading_garbage_then_frame",
+      "stream_hex": "ade39340d05acb88812b7a2636975b15546829da3f8f0b0682e3b39fa17b930855aaaa5510002207000102030405060708090a0b0c0d0e0fa463",
+      "expected_frames": [
+        {
+          "cmd": 34,
+          "seq": 7,
+          "payload_hex": "000102030405060708090a0b0c0d0e0f"
+        }
+      ],
+      "expected_stats": {
+        "frames_ok": 1,
+        "crc_errors": 0
+      },
+      "check_frames_ok": true
+    },
+    {
+      "name": "frame_with_truncated_tail",
+      "stream_hex": "5510002207000102030405060708090a0b0c0d0e0fa4635510008133726573706f6e",
+      "expected_frames": [
+        {
+          "cmd": 34,
+          "seq": 7,
+          "payload_hex": "000102030405060708090a0b0c0d0e0f"
+        }
+      ],
+      "expected_stats": {
+        "frames_ok": 1,
+        "crc_errors": 0
+      },
+      "check_frames_ok": false
+    },
+    {
+      "name": "multi_frames_with_garbage_gaps",
+      "stream_hex": "5510002207000102030405060708090a0b0c0d0e0fa46355aaaa5510008133726573706f6e73652d7061796c6f616459b9552800510948152c2f0d4531f6fa4233cfcf8247248f819d0eddf6592bcc0edc10ea793c219fb9077f835ae63eba5b5503002008aa55bbdc01",
+      "expected_frames": [
+        {
+          "cmd": 34,
+          "seq": 7,
+          "payload_hex": "000102030405060708090a0b0c0d0e0f"
+        },
+        {
+          "cmd": 129,
+          "seq": 51,
+          "payload_hex": "726573706f6e73652d7061796c6f6164"
+        },
+        {
+          "cmd": 32,
+          "seq": 8,
+          "payload_hex": "aa55bb"
+        }
+      ],
+      "expected_stats": {
+        "frames_ok": 3,
+        "crc_errors": 1
+      },
+      "check_frames_ok": true
+    }
+  ]
+}
